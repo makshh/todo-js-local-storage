@@ -21,13 +21,13 @@ var TODO = (function(window, document, $) {
       done: 0
     };
     tasks[module.getNumberOfTasks()] = data;
-    store.set('tasks', tasks);
-  }
+    module.saveTasks();
+  };
 
   // Get number of tasks
   module.getNumberOfTasks = function() {
     return tasks.length;
-  }
+  };
 
   // Get number of tasks done
   module.getNumberOfTasksDone = function() {
@@ -38,7 +38,7 @@ var TODO = (function(window, document, $) {
       }
     });
     return numberOfTasksDone;
-  }
+  };
 
   // Get number of tasks not done
   module.getNumberOfTasksDone = function() {
@@ -49,6 +49,23 @@ var TODO = (function(window, document, $) {
       }
     });
     return numberOfTasksNotDone;
+  };
+
+  // Mark as done
+  module.markAsDone = function(id) {
+    tasks[id].done = 1;
+    module.saveTasks();
+  };
+
+  // Mark as not done
+  module.markAsNotDone = function(id) {
+    tasks[id].done = 0;
+    module.saveTasks();
+  };
+
+  // Save tasks to local storage
+  module.saveTasks = function() {
+    store.set('tasks', tasks);
   }
 
   return module;
