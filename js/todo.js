@@ -17,7 +17,8 @@ var TODO = (function(window, document, $) {
     var data = {
       content: content,
       categoryId: categoryId,
-      comment: comment
+      comment: comment,
+      done: 0
     };
     tasks[module.getNumberOfTasks()] = data;
     store.set('tasks', tasks);
