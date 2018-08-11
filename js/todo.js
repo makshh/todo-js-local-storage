@@ -9,6 +9,7 @@ var TODO = (function(window, document, $) {
   }
 
   var tasks = [];
+  var categories = [];
 
   var module = {};
 
@@ -20,9 +21,15 @@ var TODO = (function(window, document, $) {
       comment: comment,
       done: 0
     };
-    tasks[module.getNumberOfTasks()] = data;
+    tasks.push(data);
     module.saveTasks();
   };
+
+  // Add new category
+  module.addCategory = function(name) {
+    categories.push(name);
+    module.saveCategories();
+  }
 
   // Get number of tasks
   module.getNumberOfTasks = function() {
@@ -66,6 +73,11 @@ var TODO = (function(window, document, $) {
   // Save tasks to local storage
   module.saveTasks = function() {
     store.set('tasks', tasks);
+  }
+
+  // Save tasks to local storage
+  module.saveCategories = function() {
+    store.set('categories', categories);
   }
 
   return module;
