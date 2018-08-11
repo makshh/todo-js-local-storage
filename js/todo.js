@@ -42,12 +42,12 @@ var TODO = (function(window, document, $) {
 
     // Add new category
     $('#new-category').on('click', function() {
-      var category = $('#category').val();
-      if(!category) {
-        alert('Category name cannot be empty');
-        return;
-      }
-      module.addCategory($('#category').val());
+      //var category = $('#category').val();
+      //if(!category) {
+      //  alert('Category name cannot be empty');
+      //  return;
+      //}
+      //module.addCategory($('#category').val());
     });
 
     // Add new task
@@ -91,7 +91,7 @@ var TODO = (function(window, document, $) {
       if(task.comment) {
         comment = 'data-tooltip="true" title="' + task.comment + '"';
       }
-      html += '<div data-id="' + index + '"' + comment + ' data-category-id="' + task.categoryId + '">' + task.content + '</div>'
+      html += '<div class="task" data-id="' + index + '"' + comment + ' data-category-id="' + task.categoryId + '">' + task.content + '</div>'
     });
     $(html).appendTo('.tasks');
   };
