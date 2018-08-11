@@ -80,6 +80,18 @@ var TODO = (function(window, document, $) {
     store.set('categories', categories);
   }
 
+  // Remove task
+  module.removeTask = function(id) {
+    tasks.splice(id, 1);
+    module.saveTasks();
+  }
+
+  // Remove category
+  module.removeCategory = function(id) {
+    categories.splice(id, 1);
+    module.saveCategories();
+  }
+
   return module;
 
 })(window, document, jQuery);
