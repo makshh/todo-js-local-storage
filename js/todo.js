@@ -16,6 +16,7 @@ var TODO = (function(window, document, $) {
   module.init = function() {
     module.getAllTasks();
     module.getAllCategories();
+    module.showCategories();
     module.bindUiEvents();
     module.prepareView();
     module.showTasks();
@@ -42,12 +43,12 @@ var TODO = (function(window, document, $) {
 
     // Add new category
     $('#new-category').on('click', function() {
-      //var category = $('#category').val();
-      //if(!category) {
-      //  alert('Category name cannot be empty');
-      //  return;
-      //}
-      //module.addCategory($('#category').val());
+      var category = $('#category').val();
+      if(!category) {
+        alert('Category name cannot be empty');
+        return;
+      }
+      module.addCategory($('#category').val());
     });
 
     // Add new task
@@ -82,6 +83,19 @@ var TODO = (function(window, document, $) {
     categories = store.get('categories') || [];
     return categories;
   };
+
+  // Show categories
+  module.showCategories = function() {
+    var html = '';
+    categories.forEach(function(category, index) {
+      html += '<li class="d-flex align-items-center" data-category-id="' + index + '">' +
+                '<button type="button" class="btn btn-category btn-category-text mr-auto">' + category + '</button>' +
+                '<button type="button" class="btn btn-category btn-category-remove"><i class="fas fa-edit"></i></button>' +
+                '<button type="button" class="btn btn-category btn-category-edit"><i class="fas fa-times"></i></button>' +
+              '</li>';
+    });
+    $(html).appendTo('.categories-menu');
+  }
 
   // Show tasks
   module.showTasks = function() {
