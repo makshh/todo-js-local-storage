@@ -15,7 +15,21 @@ var TODO = (function(window, document, $) {
 
   module.init = function() {
     module.getAllTasks();
+    module.bindUiEvents();
   };
+
+  module.bindUiEvents = function() {
+
+    // Add new category
+    $('#category').on('click', function() {
+      module.addCategory($(this).val());
+    });
+
+    // Add new task
+    $('#category').on('click', function() {
+      module.add($(this).val(), $('#category').val(), $('#comment').val());
+    });
+  }
 
   // Get all tasks
   module.getAllTasks = function() {
