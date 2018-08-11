@@ -8,8 +8,8 @@ var TODO = (function(window, document, $) {
     return;
   }
 
-  var tasks = [];
-  var categories = [];
+  var tasks = {};
+  var categories = {};
 
   var module = {};
 
@@ -63,7 +63,6 @@ var TODO = (function(window, document, $) {
     $(document).on('click', '.btn-category-remove', function() {
       var categoryId = $(this).parent().attr('data-category-id');
       module.removeCategory(categoryId);
-      $(this).parent().remove();
     });
   };
 
@@ -72,8 +71,8 @@ var TODO = (function(window, document, $) {
     if(store.get('tasks')) {
       tasks = store.get('tasks');
     } else {
-      tasks = [];
-      tasks = store.set('tasks', tasks);
+      tasks = {};
+      store.set('tasks', tasks);
     }
     return tasks;
   };
@@ -83,22 +82,27 @@ var TODO = (function(window, document, $) {
     if(store.get('categories')) {
       categories = store.get('categories');
     } else {
-      categories = [];
-      categories = store.set('categories', categories);
+      categories = {};
+      store.set('categories', categories);
     }
     return categories;
   };
 
   // Show categories
   module.showCategories = function() {
+    console.log(categories)
     var html = '';
-    categories.forEach(function(category, index) {
-      html += '<li class="d-flex align-items-center" data-category-id="' + index + '">' +
-                '<button type="button" class="btn btn-category btn-category-text mr-auto">' + category + '</button>' +
-                '<button type="button" class="btn btn-category btn-category-edit"><i class="fas fa-edit"></i></button>' +
-                '<button type="button" class="btn btn-category btn-category-remove"><i class="fas fa-times"></i></button>' +
-              '</li>';
-    });
+    for(var key in categories) {
+      if (!categories.hasOwnProperty(key)) {
+        continue;
+      }
+      var obj = categories[key];
+      html += '<li class="d-flex align-items-center" data-category-id="' + key + '">' +
+                  '<button type="button" class="btn btn-category btn-category-text mr-auto">' + obj + '</button>' +
+                  '<button type="button" class="btn btn-category btn-category-edit"><i class="fas fa-edit"></i></button>' +
+                  '<button type="button" class="btn btn-category btn-category-remove"><i class="fas fa-times"></i></button>' +
+                '</li>';
+    }
     $(html).appendTo('.categories-menu');
     $('.categories-menu').find('li:first').addClass('active');
   }
@@ -107,16 +111,27 @@ var TODO = (function(window, document, $) {
   module.showTasks = function(categoryId) {
     $('.tasks').empty();
     var html = '';
-    tasks.forEach(function(task, index) {
-      if(task.categoryId != categoryId) {
-        return;
+
+
+    for(var key in tasks) {
+      if (!tasks.hasOwnProperty(key)) {
+        continue;
       }
-      var comment = '';
-      if(task.comment) {
-        comment = 'data-tooltip="true" title="' + task.comment + '"';
+      var obj = tasks[key];
+      for (var prop in obj) {
+        if(!obj.hasOwnProperty(prop)) {
+          continue;
+        }
+        if(obj.categoryId !== categoryId) {
+          continue;
+        }
+        var comment = '';
+        if(obj.comment) {
+          comment = 'data-tooltip="true" title="' + task.comment + '"';
+        }
+        html += '<div class="task" data-id="' + key + '"' + comment + ' data-category-id="' + obj.categoryId + '">' + obj.content + '</div>';
       }
-      html += '<div class="task" data-id="' + index + '"' + comment + ' data-category-id="' + task.categoryId + '">' + task.content + '</div>'
-    });
+    }
     $(html).appendTo('.tasks');
   };
 
@@ -128,18 +143,19 @@ var TODO = (function(window, document, $) {
       comment: comment,
       done: 0
     };
-    tasks.push(data);
+    tasks[module.numberofTasks()] = data;
     module.saveTasks();
   };
 
   // Add new category
   module.addCategory = function(name) {
-    var html = '<li class="d-flex align-items-center" data-category-id="' + categories.length + '">' +
+    var html = '<li class="d-flex align-items-center" data-category-id="' + module.getNumberOfCategories() + '">' +
                   '<button type="button" class="btn btn-category btn-category-text mr-auto">' + name + '</button>' +
                   '<button type="button" class="btn btn-category btn-category-edit"><i class="fas fa-edit"></i></button>' +
                   '<button type="button" class="btn btn-category btn-category-remove"><i class="fas fa-times"></i></button>' +
                 '</li>';
-    categories.push(name);
+    categories[module.getNumberOfCategories()] = name;
+    console.log(categories)
     module.saveCategories();
     $(html).appendTo('.categories-menu');
     $('.categories-menu > li').removeClass('active');
@@ -149,7 +165,12 @@ var TODO = (function(window, document, $) {
 
   // Get number of tasks
   module.getNumberOfTasks = function() {
-    return tasks.length;
+    return Object.keys(tasks).length;
+  };
+
+  // Get number of categories
+  module.getNumberOfCategories = function() {
+    return Object.keys(categories).length;
   };
 
   // Get number of tasks done
@@ -214,7 +235,7 @@ var TODO = (function(window, document, $) {
 
   // Remove task
   module.removeTask = function(id) {
-    tasks.splice(id, 1);
+    delete tasks[id];
     module.saveTasks();
   };
 
@@ -226,12 +247,28 @@ var TODO = (function(window, document, $) {
 
   // Remove category
   module.removeCategory = function(id) {
-    categories.splice(id, 1);
+    console.log(id);
+    delete categories[id];
     var removed = $('li[data-category-id="' + id + '"]');
-    var nextAll = removed.nextAll();
-    nextAll.each(function() {
-      $(this).attr('data-category-id', parseInt($(this).attr('data-category-id')) - 1);
-    });
+    if(removed.hasClass('active')) {
+      $('.categories-menu > li:first').addClass('active');
+      module.showTasks(0);
+    }
+    for(var key in tasks) {
+      if (!tasks.hasOwnProperty(key)) {
+        continue;
+      }
+      var obj = tasks[key];
+      for (var prop in obj) {
+        if(!obj.hasOwnProperty(prop)) {
+          continue;
+        }
+        if(obj.categoryId === id) {
+          module.removeTask(id);
+        }
+      }
+    }
+    removed.remove();
     module.saveCategories();
   };
 
