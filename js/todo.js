@@ -16,6 +16,7 @@ var TODO = (function(window, document, $) {
   module.init = function() {
     module.getAllTasks();
     module.bindUiEvents();
+    module.showTasks();
   };
 
   module.bindUiEvents = function() {
@@ -53,14 +54,22 @@ var TODO = (function(window, document, $) {
   };
 
   // Get all categories
-  module.getAllTasks = function() {
+  module.getAllCategories = function() {
     categories = store.get('categories') || [];
     return categories;
   };
 
   // Show tasks
   module.showTasks = function() {
-
+    var html = '';
+    tasks.forEach(function(task, index) {
+      var comment = '';
+      if(task.comment) {
+        comment = 'data-tooltip="true" title="' + task.comment + '"';
+      }
+      html += '<div data-id="' + index + '"' + comment + '>' + task.content + '</div>'
+    });
+    $(html).appendTo('.tasks');
   };
 
   // Add new task
