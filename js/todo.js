@@ -52,6 +52,12 @@ var TODO = (function(window, document, $) {
     return tasks;
   };
 
+  // Get all categories
+  module.getAllTasks = function() {
+    categories = store.get('categories') || [];
+    return categories;
+  };
+
   // Show tasks
   module.showTasks = function() {
 
