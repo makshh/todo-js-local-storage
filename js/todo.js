@@ -8,7 +8,20 @@ var TODO = (function(window, document, $) {
     return;
   }
 
+  var tasks = [];
+
   var module = {};
+
+  // Add new task
+  module.add = function(content, categoryId, comment) {
+    var data = {
+      content: content,
+      categoryId: categoryId,
+      comment: comment
+    };
+    tasks[module.getNumberOfTasks()] = data;
+    store.set('tasks', tasks);
+  }
 
   return module;
 
