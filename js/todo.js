@@ -40,6 +40,17 @@ var TODO = (function(window, document, $) {
     return numberOfTasksDone;
   }
 
+  // Get number of tasks not done
+  module.getNumberOfTasksDone = function() {
+    var numberOfTasksNotDone = 0;
+    tasks.forEach(function(task) {
+      if(task.done === 0) {
+        numberOfTasksNotDone++;
+      }
+    });
+    return numberOfTasksNotDone;
+  }
+
   return module;
 
 })(window, document, jQuery);
