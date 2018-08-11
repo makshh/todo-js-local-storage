@@ -3,6 +3,8 @@
 var TODO = (function(window, document, $) {
 
   var errorEl = $('#error');
+  var categoriesEmpty = $('.categories-empty-sidebar, .categories-empty-main');
+  var tasksWrapper = $('.tasks-wrapper');
 
   // Check local storage support
   if (!store.enabled) {
@@ -25,8 +27,10 @@ var TODO = (function(window, document, $) {
   };
 
   module.prepareView = function() {
-    if(categories) {
+    if(!(Object.keys(categories).length === 0 && categories.constructor === Object)) {
       module.showCategories();
+      categoriesEmpty.attr('hidden', true);
+      tasksWrapper.removeAttr('hidden');
     }
   };
 
@@ -91,6 +95,10 @@ var TODO = (function(window, document, $) {
     $('.category-remove-btn').on('click', function() {
       var categoryId = parseInt($(this).attr('data-category-id'), 10);
       module.removeCategory(categoryId);
+    });
+
+    $('.categories-empty-main').on('click', function() {
+      $('#new-category').focus();
     });
   };
 
@@ -175,6 +183,8 @@ var TODO = (function(window, document, $) {
     $('.categories-menu > li').removeClass('active');
     $('.categories-menu').find('li:last').addClass('active');
     $('.tasks').empty();
+    categoriesEmpty.attr('hidden', true);
+    tasksWrapper.removeAttr('hidden');
   };
 
   // Get number of tasks
@@ -282,6 +292,10 @@ var TODO = (function(window, document, $) {
       }
     }
     removed.remove();
+    if(Object.keys(categories).length === 0 && categories.constructor === Object) {
+      categoriesEmpty.removeAttr('hidden');
+      tasksWrapper.attr('hidden', true);
+    }
     module.saveCategories();
   };
 
