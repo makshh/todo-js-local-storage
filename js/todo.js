@@ -47,6 +47,15 @@ var TODO = (function(window, document, $) {
     return numberOfTasksDone;
   };
 
+  // Get number of tasks done in percents
+  module.numberOfTasksDonePercent = function() {
+    if(module.numberOfTasksDone() === 0) {
+      return '0%';
+    } else {
+      return parseInt((module.getNumberOfTasksDone() / module.getNumberOfTasks()) * 100, 10) + '%';
+    }
+  },
+
   // Get number of tasks not done
   module.getNumberOfTasksDone = function() {
     var numberOfTasksNotDone = 0;
