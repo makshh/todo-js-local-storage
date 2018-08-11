@@ -69,13 +69,23 @@ var TODO = (function(window, document, $) {
 
   // Get all tasks
   module.getAllTasks = function() {
-    tasks = store.get('tasks') || [];
+    if(store.get('tasks')) {
+      tasks = store.get('tasks');
+    } else {
+      tasks = [];
+      tasks = store.set('tasks', tasks);
+    }
     return tasks;
   };
 
   // Get all categories
   module.getAllCategories = function() {
-    categories = store.get('categories') || [];
+    if(store.get('categories')) {
+      categories = store.get('categories');
+    } else {
+      categories = [];
+      categories = store.set('categories', categories);
+    }
     return categories;
   };
 
@@ -132,6 +142,9 @@ var TODO = (function(window, document, $) {
     categories.push(name);
     module.saveCategories();
     $(html).appendTo('.categories-menu');
+    $('.categories-menu > li').removeClass('active');
+    $('.categories-menu').find('li:last').addClass('active');
+    $('.tasks').empty();
   };
 
   // Get number of tasks
@@ -214,6 +227,11 @@ var TODO = (function(window, document, $) {
   // Remove category
   module.removeCategory = function(id) {
     categories.splice(id, 1);
+    var removed = $('li[data-category-id="' + id + '"]');
+    var nextAll = removed.nextAll();
+    nextAll.each(function() {
+      $(this).attr('data-category-id', parseInt($(this).attr('data-category-id')) - 1);
+    });
     module.saveCategories();
   };
 
