@@ -13,11 +13,15 @@ var TODO = (function(window, document, $) {
 
   var module = {};
 
+  module.init = function() {
+    module.getAllTasks();
+  };
+
   // Get all tasks
   module.getAllTasks = function() {
     tasks = store.get('tasks');
     return tasks;
-  }
+  };
 
   // Show tasks
   module.showTasks = function() {
@@ -115,3 +119,5 @@ var TODO = (function(window, document, $) {
   return module;
 
 })(window, document, jQuery);
+
+TODO.init();
