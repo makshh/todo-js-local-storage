@@ -53,10 +53,10 @@ var TODO = (function(window, document, $) {
 
     // Add new task
     $('#new-task').on('click', function() {
-      var categoryId = $('#category-select').val();
+      var categoryId = parseInt($('.categories-menu').find('.active').attr('data-category-id'), 10);
       var content = $('#content').val();
       if(!categoryId) {
-        alert('Category name cannot be empty');
+        alert('Select category');
         return;
       }
       if(!content) {
