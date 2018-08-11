@@ -18,7 +18,7 @@ var TODO = (function(window, document, $) {
     module.getAllCategories();
     module.bindUiEvents();
     module.prepareView();
-    module.showTasks();
+    module.showTasks(0);
   };
 
   module.prepareView = function() {
@@ -48,7 +48,7 @@ var TODO = (function(window, document, $) {
         return;
       }
       var content = $('#content').val();
-      var categoryId = $('#category-select').val();
+      var categoryId = categoryId;
       var comment = $('#comment').val();
       module.add(content, categoryId, comment);
     });
@@ -92,9 +92,12 @@ var TODO = (function(window, document, $) {
   }
 
   // Show tasks
-  module.showTasks = function() {
+  module.showTasks = function(categoryId) {
     var html = '';
     tasks.forEach(function(task, index) {
+      if(task.categoryId != categoryId) {
+        return;
+      }
       var comment = '';
       if(task.comment) {
         comment = 'data-tooltip="true" title="' + task.comment + '"';
@@ -121,7 +124,7 @@ var TODO = (function(window, document, $) {
     categories.push(name);
     module.saveCategories();
     var html = '';
-    html += '<li class="d-flex align-items-center" data-category-id="">' +
+    html += '<li class="d-flex align-items-center" data-category-id="' + categories.length - 1 + '">' +
               '<button type="button" class="btn btn-category btn-category-text mr-auto">' + name + '</button>' +
               '<button type="button" class="btn btn-category btn-category-edit"><i class="fas fa-edit"></i></button>' +
               '<button type="button" class="btn btn-category btn-category-remove"><i class="fas fa-times"></i></button>' +
