@@ -15,7 +15,8 @@ var TODO = (function(window, document, $) {
 
   // Get all tasks
   module.getAllTasks = function() {
-    return store.get('tasks');
+    tasks = store.get('tasks');
+    return tasks;
   }
 
   // Add new task
