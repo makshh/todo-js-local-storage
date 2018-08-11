@@ -124,14 +124,13 @@ var TODO = (function(window, document, $) {
 
   // Add new category
   module.addCategory = function(name) {
+    var html = '<li class="d-flex align-items-center" data-category-id="' + categories.length + '">' +
+                  '<button type="button" class="btn btn-category btn-category-text mr-auto">' + name + '</button>' +
+                  '<button type="button" class="btn btn-category btn-category-edit"><i class="fas fa-edit"></i></button>' +
+                  '<button type="button" class="btn btn-category btn-category-remove"><i class="fas fa-times"></i></button>' +
+                '</li>';
     categories.push(name);
     module.saveCategories();
-    var html = '';
-    html += '<li class="d-flex align-items-center" data-category-id="' + categories.length - 1 + '">' +
-              '<button type="button" class="btn btn-category btn-category-text mr-auto">' + name + '</button>' +
-              '<button type="button" class="btn btn-category btn-category-edit"><i class="fas fa-edit"></i></button>' +
-              '<button type="button" class="btn btn-category btn-category-remove"><i class="fas fa-times"></i></button>' +
-            '</li>';
     $(html).appendTo('.categories-menu');
   };
 
