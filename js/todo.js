@@ -19,6 +19,11 @@ var TODO = (function(window, document, $) {
     return tasks;
   }
 
+  // Show tasks
+  module.showTasks = function() {
+
+  };
+
   // Add new task
   module.add = function(content, categoryId, comment) {
     var data = {
