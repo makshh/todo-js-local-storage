@@ -23,6 +23,11 @@ var TODO = (function(window, document, $) {
     store.set('tasks', tasks);
   }
 
+  // Get number of tasks
+  module.getNumberOfTasks = function() {
+    return tasks.length;
+  }
+
   return module;
 
 })(window, document, jQuery);
