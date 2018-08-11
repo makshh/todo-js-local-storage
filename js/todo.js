@@ -323,4 +323,8 @@ var TODO = (function(window, document, $) {
 
 })(window, document, jQuery);
 
+$(window).on('load', function() {
+  $('.loader').removeClass('active');
+});
+
 TODO.init();
