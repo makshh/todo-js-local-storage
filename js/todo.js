@@ -48,7 +48,7 @@ var TODO = (function(window, document, $) {
 
   // Get all tasks
   module.getAllTasks = function() {
-    tasks = store.get('tasks');
+    tasks = store.get('tasks') || [];
     return tasks;
   };
 
