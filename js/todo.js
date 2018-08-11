@@ -56,6 +56,8 @@ var TODO = (function(window, document, $) {
     $(document).on('click', '.categories-menu .btn-category-text', function() {
       $('.categories-menu .btn').parent().removeClass('active');
       $(this).parent().addClass('active');
+      var categoryId = $(this).parent().attr('data-category-id');
+      module.showTasks(categoryId);
     });
 
     $(document).on('click', '.btn-category-remove', function() {
@@ -93,6 +95,7 @@ var TODO = (function(window, document, $) {
 
   // Show tasks
   module.showTasks = function(categoryId) {
+    $('.tasks').empty();
     var html = '';
     tasks.forEach(function(task, index) {
       if(task.categoryId != categoryId) {
