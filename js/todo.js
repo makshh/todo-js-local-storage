@@ -86,7 +86,7 @@ var TODO = (function(window, document, $) {
       if(task.comment) {
         comment = 'data-tooltip="true" title="' + task.comment + '"';
       }
-      html += '<div data-id="' + index + '"' + comment + '>' + task.content + '</div>'
+      html += '<div data-id="' + index + '"' + comment + ' data-category-id="' + task.categoryId + '">' + task.content + '</div>'
     });
     $(html).appendTo('.tasks');
   };
