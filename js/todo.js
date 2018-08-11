@@ -29,6 +29,17 @@ var TODO = (function(window, document, $) {
     return tasks.length;
   }
 
+  // Get number of tasks done
+  module.getNumberOfTasksDone = function() {
+    var numberOfTasksDone = 0;
+    tasks.forEach(function(task) {
+      if(task.done === 1) {
+        numberOfTasksDone++;
+      }
+    });
+    return numberOfTasksDone;
+  }
+
   return module;
 
 })(window, document, jQuery);
