@@ -2,9 +2,12 @@
 
 var TODO = (function(window, document, $) {
 
+  var errorEl = $('#error');
+
   // Check local storage support
   if (!store.enabled) {
-    alert('Local storage is not supported by your browser. Please disable "Private Mode", or upgrade to a modern browser.');
+    errorEl.text('Local storage is not supported by your browser. Please disable "Private Mode", or upgrade to a modern browser.');
+    errorEl.show();
     return;
   }
 
@@ -33,7 +36,8 @@ var TODO = (function(window, document, $) {
     $('.add-new-category-btn').on('click', function() {
       var category = $('#new-category').val();
       if(!category) {
-        alert('Category name cannot be empty');
+        errorEl.text('Category name cannot be empty');
+        errorEl.show();
         return;
       }
       module.addCategory(category);
@@ -44,13 +48,13 @@ var TODO = (function(window, document, $) {
       var categoryId = parseInt($('.categories-menu').find('.active').attr('data-category-id'), 10);
       var content = $('#content').val();
       if(!content) {
-        alert('Task cannot be empty');
+        errorEl.text('Task cannot be empty');
+        errorEl.show();
         return;
       }
       var content = $('#content').val();
       var categoryId = categoryId;
-      var comment = $('#comment').val();
-      module.add(content, categoryId, comment);
+      module.add(content, categoryId);
     });
 
     $(document).on('click', '.categories-menu .btn-category-text', function() {
@@ -72,7 +76,6 @@ var TODO = (function(window, document, $) {
       var categoryId = parseInt($(this).attr('data-category-id'), 10);
       var name = $('#edit-category').val();
       module.editCategory(categoryId, name);
-      $('.categories-menu [data-category-id="' + categoryId + '"]').find('.btn-category-text').text(name);
     });
 
     $('#category-edit-modal').on('shown.bs.modal', function() {
@@ -81,6 +84,12 @@ var TODO = (function(window, document, $) {
 
     $(document).on('click', '.btn-category-remove', function() {
       var categoryId = $(this).parent().attr('data-category-id');
+      $('.category-remove-btn').attr('data-category-id', categoryId);
+      $('#category-remove-modal').modal('show');
+    });
+
+    $('.category-remove-btn').on('click', function() {
+      var categoryId = parseInt($(this).attr('data-category-id'), 10);
       module.removeCategory(categoryId);
     });
   };
@@ -137,21 +146,16 @@ var TODO = (function(window, document, $) {
       if(obj.categoryId !== categoryId) {
         continue;
       }
-      var comment = '';
-      if(obj.comment) {
-        comment = 'data-tooltip="true" title="' + obj.comment + '"';
-      }
-      html += '<div class="task" data-id="' + key + '"' + comment + ' data-category-id="' + obj.categoryId + '">' + obj.content + '</div>';
+      html += '<div class="task" data-id="' + key + '"' + 'data-category-id="' + obj.categoryId + '">' + obj.content + '</div>';
     }
     $(html).appendTo('.tasks');
   };
 
   // Add new task
-  module.add = function(content, categoryId, comment) {
+  module.add = function(content, categoryId) {
     var data = {
       content: content,
       categoryId: categoryId,
-      comment: comment,
       done: 0
     };
     tasks[module.getNumberOfTasks()] = data;
@@ -237,9 +241,8 @@ var TODO = (function(window, document, $) {
   };
 
   // Edit task
-  module.editTask = function(id, content, comment) {
+  module.editTask = function(id, content) {
     tasks[id].name = name;
-    tasks[id].comment = comment;
     module.saveTasks();
   };
 
@@ -252,6 +255,7 @@ var TODO = (function(window, document, $) {
   // Edit category
   module.editCategory = function(id, name) {
     categories[id] = name;
+    $('.categories-menu [data-category-id="' + id + '"]').find('.btn-category-text').text(name);
     module.saveCategories();
   };
 
