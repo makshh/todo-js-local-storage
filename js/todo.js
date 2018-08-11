@@ -98,7 +98,27 @@ var TODO = (function(window, document, $) {
     });
 
     $('.categories-empty-main').on('click', function() {
-      $('#new-category').focus();
+      $('#new-category').addClass('add-category-input-animation').focus();
+      setTimeout(function() {
+        $('#new-category').removeClass('add-category-input-animation')
+      }, 1000);
+    });
+
+    $('.mobile-menu').on('click', function() {
+      $(this).toggleClass('active');
+      $('.categories-sidebar').toggleClass('active');
+    });
+
+    $('#new-category').keypress(function(event) {
+      if(event.keyCode == 13){
+        $('.add-new-category-btn').trigger('click');
+      }
+    });
+
+    $('#content').keypress(function(event) {
+      if(event.keyCode == 13) {
+        $('.add-new-task-btn').trigger('click');
+      }
     });
   };
 
