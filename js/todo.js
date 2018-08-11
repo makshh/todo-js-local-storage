@@ -22,11 +22,26 @@ var TODO = (function(window, document, $) {
 
     // Add new category
     $('#new-category').on('click', function() {
+      var category = $('#category').val();
+      if(!category) {
+        alert('Category name cannot be empty');
+        return;
+      }
       module.addCategory($('#category').val());
     });
 
     // Add new task
     $('#new-task').on('click', function() {
+      var categoryId = $('#category-select').val();
+      var content = $('#content').val();
+      if(!categoryId) {
+        alert('Category name cannot be empty');
+        return;
+      }
+      if(!content) {
+        alert('Task cannot be empty');
+        return;
+      }
       module.add($('#content').val(), $('#category-select').val(), $('#comment').val());
     });
   }
