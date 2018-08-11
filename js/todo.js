@@ -15,8 +15,27 @@ var TODO = (function(window, document, $) {
 
   module.init = function() {
     module.getAllTasks();
+    module.getAllCategories();
     module.bindUiEvents();
+    module.prepareView();
     module.showTasks();
+  };
+
+  module.prepareView = function() {
+    if(categories) {
+      categories.forEach(function(category, index) {
+        $('#category-select').append($('<option>', {
+          value: index,
+          text: category
+        }));
+      });
+      $('.categories-wrapper').removeAttr('hidden');
+      $('.task-wrapper').removeAttr('hidden');
+      $('.comment-wrapper').removeAttr('hidden');
+    }
+    if(tasks) {
+      $('.tasks').removeAttr('hidden');
+    }
   };
 
   module.bindUiEvents = function() {
@@ -45,7 +64,7 @@ var TODO = (function(window, document, $) {
       }
       module.add($('#content').val(), $('#category-select').val(), $('#comment').val());
     });
-  }
+  };
 
   // Get all tasks
   module.getAllTasks = function() {
@@ -88,7 +107,7 @@ var TODO = (function(window, document, $) {
   module.addCategory = function(name) {
     categories.push(name);
     module.saveCategories();
-  }
+  };
 
   // Get number of tasks
   module.getNumberOfTasks = function() {
@@ -113,7 +132,7 @@ var TODO = (function(window, document, $) {
     } else {
       return parseInt((module.getNumberOfTasksDone() / module.getNumberOfTasks()) * 100, 10) + '%';
     }
-  },
+  };
 
   // Get number of tasks not done
   module.getNumberOfTasksDone = function() {
@@ -141,24 +160,24 @@ var TODO = (function(window, document, $) {
   // Save tasks to local storage
   module.saveTasks = function() {
     store.set('tasks', tasks);
-  }
+  };
 
   // Save tasks to local storage
   module.saveCategories = function() {
     store.set('categories', categories);
-  }
+  };
 
   // Remove task
   module.removeTask = function(id) {
     tasks.splice(id, 1);
     module.saveTasks();
-  }
+  };
 
   // Remove category
   module.removeCategory = function(id) {
     categories.splice(id, 1);
     module.saveCategories();
-  }
+  };
 
   return module;
 
