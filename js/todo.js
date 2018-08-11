@@ -49,7 +49,7 @@ var TODO = (function(window, document, $) {
 
   // Get number of tasks done in percents
   module.numberOfTasksDonePercent = function() {
-    if(module.numberOfTasksDone() === 0) {
+    if(module.getNumberOfTasksDone() === 0) {
       return '0%';
     } else {
       return parseInt((module.getNumberOfTasksDone() / module.getNumberOfTasks()) * 100, 10) + '%';
