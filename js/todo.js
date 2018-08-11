@@ -22,13 +22,17 @@ var TODO = (function(window, document, $) {
     module.getAllTasks();
     module.getAllCategories();
     module.bindUiEvents();
-    module.prepareView();
-    module.showTasks(0);
+    var categoryActive = 0;
+    if(store.get('category') !== undefined) {
+      categoryActive = store.get('category');
+    }
+    module.prepareView(categoryActive);
+    module.showTasks(categoryActive);
   };
 
-  module.prepareView = function() {
+  module.prepareView = function(category) {
     if(!(Object.keys(categories).length === 0 && categories.constructor === Object)) {
-      module.showCategories();
+      module.showCategories(category);
       categoriesEmpty.attr('hidden', true);
       tasksWrapper.removeAttr('hidden');
     }
@@ -65,7 +69,9 @@ var TODO = (function(window, document, $) {
       $('.categories-menu .btn').parent().removeClass('active');
       $(this).parent().addClass('active');
       var categoryId = parseInt($(this).parent().attr('data-category-id'), 10);
+      $('.tasks').attr('hidden', true);
       module.showTasks(categoryId);
+      module.setCategoryView(categoryId);
     });
 
     $(document).on('click', '.btn-category-edit', function() {
@@ -76,13 +82,40 @@ var TODO = (function(window, document, $) {
       $('.category-edit-btn').attr('data-category-id', categoryId);
     });
 
+    $(document).on('click', '.btn-task-edit', function() {
+      var task = $(this).closest('.task');
+      var taskId = task.attr('data-id');
+      var name = task.find('.task-content').text();
+      $('#edit-task').val(name);
+      $('#task-edit-modal').modal('show');
+      $('.task-edit-btn').attr('data-id', taskId);
+    });
+
     $('.category-edit-btn').on('click', function() {
       var categoryId = parseInt($(this).attr('data-category-id'), 10);
       var name = $('#edit-category').val();
+      if(content === '') {
+        errorEl.text('Task cannot be empty');
+        errorEl.show();
+        return;
+      }
+      $('#task-edit-modal').modal('hide');
       module.editCategory(categoryId, name);
     });
 
-    $('#category-edit-modal').on('shown.bs.modal', function() {
+    $('.task-edit-btn').on('click', function() {
+      var taskId = parseInt($(this).attr('data-id'), 10);
+      var content = $('#edit-task').val();
+      if(content === '') {
+        errorEl.text('Task cannot be empty');
+        errorEl.show();
+        return;
+      }
+      $('#task-edit-modal').modal('hide');
+      module.editTask(taskId, content);
+    });
+
+    $('#category-edit-modal, #task-edit-modal').on('shown.bs.modal', function() {
       $(this).find('.form-control').focus();
     });
 
@@ -95,6 +128,17 @@ var TODO = (function(window, document, $) {
     $('.category-remove-btn').on('click', function() {
       var categoryId = parseInt($(this).attr('data-category-id'), 10);
       module.removeCategory(categoryId);
+    });
+
+    $(document).on('click', '.btn-task-remove', function() {
+      var taskId = $(this).closest('.task').attr('data-id');
+      $('.task-remove-btn').attr('data-id', taskId);
+      $('#task-remove-modal').modal('show');
+    });
+
+    $('.task-remove-btn').on('click', function() {
+      var taskId = parseInt($(this).attr('data-id'), 10);
+      module.removeTask(taskId);
     });
 
     $('.categories-empty-main').on('click', function() {
@@ -119,6 +163,32 @@ var TODO = (function(window, document, $) {
       if(event.keyCode == 13) {
         $('.add-new-task-btn').trigger('click');
       }
+    });
+
+    $(document).on('click', '.btn-task-done', function() {
+      var task = $(this).closest('.task');
+      var taskId = parseInt(task.attr('data-id'), 10);
+      if(tasks[taskId].done === 0 || tasks[taskId].done === 2) {
+        tasks[taskId].done = 1;
+        task.removeClass('working').addClass('done');
+      } else {
+        tasks[taskId].done = 0;
+        task.removeClass('done');
+      }
+      module.saveTasks();
+    });
+
+    $(document).on('click', '.btn-task-active', function() {
+      var task = $(this).closest('.task');
+      var taskId = parseInt(task.attr('data-id'), 10);
+      if(tasks[taskId].done === 0 || tasks[taskId].done === 1) {
+        tasks[taskId].done = 2;
+        task.removeClass('done').addClass('working');
+      } else {
+        tasks[taskId].done = 0;
+        task.removeClass('working');
+      }
+      module.saveTasks();
     });
   };
 
@@ -145,7 +215,7 @@ var TODO = (function(window, document, $) {
   };
 
   // Show categories
-  module.showCategories = function() {
+  module.showCategories = function(categoryId) {
     var html = '';
     for(var key in categories) {
       if (!categories.hasOwnProperty(key)) {
@@ -159,22 +229,43 @@ var TODO = (function(window, document, $) {
                 '</li>';
     }
     $(html).appendTo('.categories-menu');
-    $('.categories-menu').find('li:first').addClass('active');
+    $('.categories-menu').find('[data-category-id="' + categoryId + '"]').addClass('active');
   }
 
   // Show tasks
   module.showTasks = function(categoryId) {
+    $('.tasks-category-empty').removeAttr('hidden');
     $('.tasks').empty();
+    if(Object.keys(tasks).length === 0 && tasks.constructor === Object) {
+      return;
+    }
     var html = '';
     for(var key in tasks) {
       if (!tasks.hasOwnProperty(key)) {
         continue;
       }
-      var obj = tasks[key];
-      if(obj.categoryId !== categoryId) {
+      var task = tasks[key];
+      if(task.categoryId !== categoryId) {
         continue;
       }
-      html += '<div class="task" data-id="' + key + '"' + 'data-category-id="' + obj.categoryId + '">' + obj.content + '</div>';
+      $('.tasks').removeAttr('hidden');
+      $('.tasks-category-empty').attr('hidden', true);
+      var done = '';
+      if(task.done === 1) {
+        done = 'done';
+      }
+      if(task.done === 2) {
+        done = 'working';
+      }
+      html += '<div class="task d-flex flex-column flex-lg-row justify-content-between align-items-lg-center ' + done + '" data-id="' + key + '"' + 'data-category-id="' + task.categoryId + '">' +
+                '<div class="task-content order-last order-lg-first">' + task.content + '</div>' +
+                '<div class="mb-2 mb-lg-0">' +
+                  '<button type="button" class="btn btn-task btn-task-done"><i class="fas fa-check"></i></button>' +
+                  '<button type="button" class="btn btn-task btn-task-active"><i class="fas fa-cogs"></i></button>' +
+                  '<button type="button" class="btn btn-task btn-task-edit"><i class="fas fa-edit"></i></button>' +
+                  '<button type="button" class="btn btn-task btn-task-remove"><i class="fas fa-times"></i></button>' +
+                '</div>' +
+              '</div>';
     }
     $(html).appendTo('.tasks');
   };
@@ -186,18 +277,33 @@ var TODO = (function(window, document, $) {
       categoryId: categoryId,
       done: 0
     };
-    tasks[module.getNumberOfTasks()] = data;
+    var taskLastId = module.getTaskLastId();
+    var taskId = taskLastId + 1;
+    tasks[taskId] = data;
     module.saveTasks();
+    var html = '<div class="task d-flex flex-column flex-lg-row justify-content-between align-items-lg-center" data-id="' + taskId + '"' + 'data-category-id="' + categoryId + '">' +
+                  '<div class="task-content order-last order-lg-first">' + content + '</div>' +
+                  '<div class="mb-2 mb-lg-0">' +
+                    '<button type="button" class="btn btn-task btn-task-done"><i class="fas fa-check"></i></button>' +
+                    '<button type="button" class="btn btn-task btn-task-active"><i class="fas fa-cogs"></i></button>' +
+                    '<button type="button" class="btn btn-task btn-task-edit"><i class="fas fa-edit"></i></button>' +
+                    '<button type="button" class="btn btn-task btn-task-remove"><i class="fas fa-times"></i></button>' +
+                  '</div>' +
+                '</div>';
+    $(html).appendTo('.tasks');
+    $('.task[data-id="' + taskId + '"]').velocity('slideDown');
   };
 
   // Add new category
   module.addCategory = function(name) {
-    var html = '<li class="d-flex align-items-center" data-category-id="' + module.getNumberOfCategories() + '">' +
+    var categoryLastId = module.getCategoryLastId();
+    var categoryId = categoryLastId + 1;
+    var html = '<li class="d-flex align-items-center" data-category-id="' + categoryId + '">' +
                   '<button type="button" class="btn btn-category btn-category-text mr-auto">' + name + '</button>' +
                   '<button type="button" class="btn btn-category btn-category-edit"><i class="fas fa-edit"></i></button>' +
                   '<button type="button" class="btn btn-category btn-category-remove"><i class="fas fa-times"></i></button>' +
                 '</li>';
-    categories[module.getNumberOfCategories()] = name;
+    categories[categoryId] = name;
     module.saveCategories();
     $(html).appendTo('.categories-menu');
     $('.categories-menu > li').removeClass('active');
@@ -205,11 +311,36 @@ var TODO = (function(window, document, $) {
     $('.tasks').empty();
     categoriesEmpty.attr('hidden', true);
     tasksWrapper.removeAttr('hidden');
+    module.setCategoryView(categoryId);
   };
 
   // Get number of tasks
   module.getNumberOfTasks = function() {
     return Object.keys(tasks).length;
+  };
+
+  // Get last task id
+  module.getTaskLastId = function() {
+    if(Object.keys(tasks).length === 0 && tasks.constructor === Object) {
+      return -1;
+    }
+    var keys = [];
+    Object.keys(tasks).forEach(function(key) {
+      keys.push(key);
+    });
+    return Math.max(...keys);
+  };
+
+  // Get last category id
+  module.getCategoryLastId = function() {
+    if(Object.keys(categories).length === 0 && categories.constructor === Object) {
+      return -1;
+    }
+    var keys = [];
+    Object.keys(categories).forEach(function(key) {
+      keys.push(key);
+    });
+    return Math.max(...keys);
   };
 
   // Get number of categories
@@ -227,6 +358,11 @@ var TODO = (function(window, document, $) {
     });
     return numberOfTasksDone;
   };
+
+  // Set category view
+  module.setCategoryView = function(categoryId) {
+    store.set('category', categoryId)
+  }
 
   // Get number of tasks done in percents
   module.numberOfTasksDonePercent = function() {
@@ -272,13 +408,19 @@ var TODO = (function(window, document, $) {
 
   // Edit task
   module.editTask = function(id, content) {
-    tasks[id].name = name;
+    tasks[id].content = content;
+    $('.tasks [data-id="' + id + '"]').find('.task-content').text(content);
     module.saveTasks();
   };
 
   // Remove task
   module.removeTask = function(id) {
     delete tasks[id];
+    $('.tasks [data-id="' + id + '"]').velocity('slideUp', {
+      complete: function() {
+        $('.tasks [data-id="' + id + '"]').remove()
+      }
+    });
     module.saveTasks();
   };
 
@@ -296,19 +438,17 @@ var TODO = (function(window, document, $) {
     if(removed.hasClass('active')) {
       $('.categories-menu > li:first').addClass('active');
       module.showTasks(0);
+      module.setCategoryView(0);
     }
+
+    // Remove tasks from category
     for(var key in tasks) {
       if (!tasks.hasOwnProperty(key)) {
         continue;
       }
-      var obj = tasks[key];
-      for (var prop in obj) {
-        if(!obj.hasOwnProperty(prop)) {
-          continue;
-        }
-        if(obj.categoryId === id) {
-          module.removeTask(id);
-        }
+      var task = tasks[key];
+      if(task.categoryId === id) {
+        module.removeTask(key);
       }
     }
     removed.remove();
@@ -323,8 +463,8 @@ var TODO = (function(window, document, $) {
 
 })(window, document, jQuery);
 
+TODO.init();
+
 $(window).on('load', function() {
   $('.loader').removeClass('active');
 });
-
-TODO.init();
