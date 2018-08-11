@@ -16,7 +16,6 @@ var TODO = (function(window, document, $) {
   module.init = function() {
     module.getAllTasks();
     module.getAllCategories();
-    module.showCategories();
     module.bindUiEvents();
     module.prepareView();
     module.showTasks();
@@ -24,51 +23,45 @@ var TODO = (function(window, document, $) {
 
   module.prepareView = function() {
     if(categories) {
-      categories.forEach(function(category, index) {
-        $('#category-select').append($('<option>', {
-          value: index,
-          text: category
-        }));
-      });
-      $('.categories-wrapper').removeAttr('hidden');
-      $('.task-wrapper').removeAttr('hidden');
-      $('.comment-wrapper').removeAttr('hidden');
-    }
-    if(tasks) {
-      $('.tasks').removeAttr('hidden');
+      module.showCategories();
     }
   };
 
   module.bindUiEvents = function() {
 
     // Add new category
-    $('#new-category').on('click', function() {
-      var category = $('#category').val();
+    $('.add-new-category-btn').on('click', function() {
+      var category = $('#new-category').val();
       if(!category) {
         alert('Category name cannot be empty');
         return;
       }
-      module.addCategory($('#category').val());
+      module.addCategory(category);
     });
 
     // Add new task
     $('#new-task').on('click', function() {
       var categoryId = parseInt($('.categories-menu').find('.active').attr('data-category-id'), 10);
       var content = $('#content').val();
-      if(!categoryId) {
-        alert('Select category');
-        return;
-      }
       if(!content) {
         alert('Task cannot be empty');
         return;
       }
-      module.add($('#content').val(), $('#category-select').val(), $('#comment').val());
+      var content = $('#content').val();
+      var categoryId = $('#category-select').val();
+      var comment = $('#comment').val();
+      module.add(content, categoryId, comment);
     });
 
-    $(document).on('click', '.categories-menu .btn', function() {
+    $(document).on('click', '.categories-menu .btn-category-text', function() {
       $('.categories-menu .btn').parent().removeClass('active');
       $(this).parent().addClass('active');
+    });
+
+    $(document).on('click', '.btn-category-remove', function() {
+      var categoryId = $(this).parent().attr('data-category-id');
+      module.removeCategory(categoryId);
+      $(this).parent().remove();
     });
   };
 
@@ -90,11 +83,12 @@ var TODO = (function(window, document, $) {
     categories.forEach(function(category, index) {
       html += '<li class="d-flex align-items-center" data-category-id="' + index + '">' +
                 '<button type="button" class="btn btn-category btn-category-text mr-auto">' + category + '</button>' +
-                '<button type="button" class="btn btn-category btn-category-remove"><i class="fas fa-edit"></i></button>' +
-                '<button type="button" class="btn btn-category btn-category-edit"><i class="fas fa-times"></i></button>' +
+                '<button type="button" class="btn btn-category btn-category-edit"><i class="fas fa-edit"></i></button>' +
+                '<button type="button" class="btn btn-category btn-category-remove"><i class="fas fa-times"></i></button>' +
               '</li>';
     });
     $(html).appendTo('.categories-menu');
+    $('.categories-menu').find('li:first').addClass('active');
   }
 
   // Show tasks
@@ -126,6 +120,13 @@ var TODO = (function(window, document, $) {
   module.addCategory = function(name) {
     categories.push(name);
     module.saveCategories();
+    var html = '';
+    html += '<li class="d-flex align-items-center" data-category-id="">' +
+              '<button type="button" class="btn btn-category btn-category-text mr-auto">' + name + '</button>' +
+              '<button type="button" class="btn btn-category btn-category-edit"><i class="fas fa-edit"></i></button>' +
+              '<button type="button" class="btn btn-category btn-category-remove"><i class="fas fa-times"></i></button>' +
+            '</li>';
+    $(html).appendTo('.categories-menu');
   };
 
   // Get number of tasks
