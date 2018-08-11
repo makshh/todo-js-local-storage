@@ -64,6 +64,11 @@ var TODO = (function(window, document, $) {
       }
       module.add($('#content').val(), $('#category-select').val(), $('#comment').val());
     });
+
+    $(document).on('click', '.categories-menu .btn', function() {
+      $('.categories-menu .btn').parent().removeClass('active');
+      $(this).parent().addClass('active');
+    });
   };
 
   // Get all tasks
