@@ -193,10 +193,23 @@ var TODO = (function(window, document, $) {
     store.set('categories', categories);
   };
 
+  // Edit task
+  module.editTask = function(id, content, comment) {
+    tasks[id].name = name;
+    tasks[id].comment = comment;
+    module.saveTasks();
+  };
+
   // Remove task
   module.removeTask = function(id) {
     tasks.splice(id, 1);
     module.saveTasks();
+  };
+
+  // Edit category
+  module.editCategory = function(id, name) {
+    categories[id].name = name;
+    module.saveCategories();
   };
 
   // Remove category
