@@ -13,6 +13,11 @@ var TODO = (function(window, document, $) {
 
   var module = {};
 
+  // Get all tasks
+  module.getAllTasks = function() {
+    return store.get('tasks');
+  }
+
   // Add new task
   module.add = function(content, categoryId, comment) {
     var data = {
