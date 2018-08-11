@@ -21,13 +21,13 @@ var TODO = (function(window, document, $) {
   module.bindUiEvents = function() {
 
     // Add new category
-    $('#category').on('click', function() {
-      module.addCategory($(this).val());
+    $('#new-category').on('click', function() {
+      module.addCategory($('#category').val());
     });
 
     // Add new task
-    $('#category').on('click', function() {
-      module.add($(this).val(), $('#category').val(), $('#comment').val());
+    $('#new-task').on('click', function() {
+      module.add($('#content').val(), $('#category-select').val(), $('#comment').val());
     });
   }
 
