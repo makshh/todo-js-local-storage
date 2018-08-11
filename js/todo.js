@@ -56,8 +56,27 @@ var TODO = (function(window, document, $) {
     $(document).on('click', '.categories-menu .btn-category-text', function() {
       $('.categories-menu .btn').parent().removeClass('active');
       $(this).parent().addClass('active');
-      var categoryId = $(this).parent().attr('data-category-id');
+      var categoryId = parseInt($(this).parent().attr('data-category-id'), 10);
       module.showTasks(categoryId);
+    });
+
+    $(document).on('click', '.btn-category-edit', function() {
+      var categoryId = $(this).parent().attr('data-category-id');
+      var name = $(this).parent().find('.btn-category-text').text();
+      $('#edit-category').val(name);
+      $('#category-edit-modal').modal('show');
+      $('.category-edit-btn').attr('data-category-id', categoryId);
+    });
+
+    $('.category-edit-btn').on('click', function() {
+      var categoryId = parseInt($(this).attr('data-category-id'), 10);
+      var name = $('#edit-category').val();
+      module.editCategory(categoryId, name);
+      $('.categories-menu [data-category-id="' + categoryId + '"]').find('.btn-category-text').text(name);
+    });
+
+    $('#category-edit-modal').on('shown.bs.modal', function() {
+      $(this).find('.form-control').focus();
     });
 
     $(document).on('click', '.btn-category-remove', function() {
@@ -90,7 +109,6 @@ var TODO = (function(window, document, $) {
 
   // Show categories
   module.showCategories = function() {
-    console.log(categories)
     var html = '';
     for(var key in categories) {
       if (!categories.hasOwnProperty(key)) {
@@ -111,26 +129,19 @@ var TODO = (function(window, document, $) {
   module.showTasks = function(categoryId) {
     $('.tasks').empty();
     var html = '';
-
-
     for(var key in tasks) {
       if (!tasks.hasOwnProperty(key)) {
         continue;
       }
       var obj = tasks[key];
-      for (var prop in obj) {
-        if(!obj.hasOwnProperty(prop)) {
-          continue;
-        }
-        if(obj.categoryId !== categoryId) {
-          continue;
-        }
-        var comment = '';
-        if(obj.comment) {
-          comment = 'data-tooltip="true" title="' + task.comment + '"';
-        }
-        html += '<div class="task" data-id="' + key + '"' + comment + ' data-category-id="' + obj.categoryId + '">' + obj.content + '</div>';
+      if(obj.categoryId !== categoryId) {
+        continue;
       }
+      var comment = '';
+      if(obj.comment) {
+        comment = 'data-tooltip="true" title="' + obj.comment + '"';
+      }
+      html += '<div class="task" data-id="' + key + '"' + comment + ' data-category-id="' + obj.categoryId + '">' + obj.content + '</div>';
     }
     $(html).appendTo('.tasks');
   };
@@ -143,7 +154,7 @@ var TODO = (function(window, document, $) {
       comment: comment,
       done: 0
     };
-    tasks[module.numberofTasks()] = data;
+    tasks[module.getNumberOfTasks()] = data;
     module.saveTasks();
   };
 
@@ -155,7 +166,6 @@ var TODO = (function(window, document, $) {
                   '<button type="button" class="btn btn-category btn-category-remove"><i class="fas fa-times"></i></button>' +
                 '</li>';
     categories[module.getNumberOfCategories()] = name;
-    console.log(categories)
     module.saveCategories();
     $(html).appendTo('.categories-menu');
     $('.categories-menu > li').removeClass('active');
@@ -241,13 +251,12 @@ var TODO = (function(window, document, $) {
 
   // Edit category
   module.editCategory = function(id, name) {
-    categories[id].name = name;
+    categories[id] = name;
     module.saveCategories();
   };
 
   // Remove category
   module.removeCategory = function(id) {
-    console.log(id);
     delete categories[id];
     var removed = $('li[data-category-id="' + id + '"]');
     if(removed.hasClass('active')) {
