@@ -9,7 +9,13 @@ var TODO = (function(window, document, $) {
   // Check local storage support
   if (!store.enabled) {
     errorEl.find('> span').text('Local storage is not supported by your browser. Please disable "Private Mode", or upgrade to a modern browser.');
-    errorEl.velocity('fadeIn');
+    errorEl.velocity('fadeIn', {
+      complete: function() {
+        setTimeout(function() {
+          errorEl.velocity('fadeOut');
+        }, 2000);
+      }
+    });
     return;
   }
 
@@ -48,8 +54,8 @@ var TODO = (function(window, document, $) {
         errorEl.velocity('fadeIn', {
           complete: function() {
             setTimeout(function() {
-              errorEl.velocity('fadeIn');
-            }, 1000);
+              errorEl.velocity('fadeOut');
+            }, 2000);
           }
         });
         return;
@@ -63,7 +69,13 @@ var TODO = (function(window, document, $) {
       var content = $('#content').val();
       if(!content) {
         errorEl.find('> span').text('Task cannot be empty');
-        errorEl.velocity('fadeIn');
+        errorEl.velocity('fadeIn', {
+          complete: function() {
+            setTimeout(function() {
+              errorEl.velocity('fadeOut');
+            }, 2000);
+          }
+        });
         return;
       }
       var content = $('#content').val();
@@ -102,7 +114,13 @@ var TODO = (function(window, document, $) {
       var name = $('#edit-category').val();
       if(content === '') {
         errorEl.find('> span').text('Task cannot be empty');
-        errorEl.velocity('fadeIn');
+        errorEl.velocity('fadeIn', {
+          complete: function() {
+            setTimeout(function() {
+              errorEl.velocity('fadeOut');
+            }, 2000);
+          }
+        });
         return;
       }
       $('#category-edit-modal').modal('hide');
@@ -114,7 +132,13 @@ var TODO = (function(window, document, $) {
       var content = $('#edit-task').val();
       if(content === '') {
         errorEl.find('> span').text('Task cannot be empty');
-        errorEl.velocity('fadeIn');
+        errorEl.velocity('fadeIn', {
+          complete: function() {
+            setTimeout(function() {
+              errorEl.velocity('fadeOut');
+            }, 2000);
+          }
+        });
         return;
       }
       $('#task-edit-modal').modal('hide');
@@ -334,6 +358,7 @@ var TODO = (function(window, document, $) {
     categories[categoryId] = name;
     module.saveCategories();
     $(html).appendTo('.categories-menu');
+    $('.categories-menu [data-category-id="' + categoryId + '"]').velocity('slideDown');
     $('.categories-menu > li').removeClass('active');
     $('.categories-menu').find('li:last').addClass('active');
     $('.tasks').empty();
