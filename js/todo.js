@@ -88,6 +88,7 @@ var TODO = (function(window, document, $) {
       $(this).parent().addClass('active');
       var categoryId = parseInt($(this).parent().attr('data-category-id'), 10);
       $('.tasks').attr('hidden', true);
+      $('.category-name').text($(this).text()).velocity('fadeIn');
       module.showTasks(categoryId);
       module.setCategoryView(categoryId);
     });
@@ -285,6 +286,7 @@ var TODO = (function(window, document, $) {
   module.showTasks = function(categoryId) {
     $('.tasks-category-empty').removeAttr('hidden');
     $('.tasks').empty();
+    $('.category-name').text($('.categories-menu [data-category-id="' + categoryId + '"] > .btn-category-text').text());
     if(Object.keys(tasks).length === 0 && tasks.constructor === Object) {
       return;
     }
@@ -316,7 +318,7 @@ var TODO = (function(window, document, $) {
                 '</div>' +
               '</div>';
     }
-    $(html).appendTo('.tasks');
+    $(html).appendTo('.tasks').velocity('fadeIn');
   };
 
   // Add new task
@@ -339,11 +341,15 @@ var TODO = (function(window, document, $) {
                     '<button type="button" class="btn btn-task btn-task-remove"><i class="fas fa-times"></i></button>' +
                   '</div>' +
                 '</div>';
-    $('.tasks').removeAttr('hidden');
-    $('.tasks').velocity('slideDown');
-    $('#content').val('');
     $(html).appendTo('.tasks');
-    $('.task[data-id="' + taskId + '"]').velocity('slideDown');
+    if($('.tasks').attr('hidden')) {
+      $('.tasks-category-empty').velocity('slideUp');
+      $('.tasks').removeAttr('hidden');
+      $('.tasks').velocity('slideDown');
+    } else {
+      $('.task[data-id="' + taskId + '"]').velocity('slideDown');
+    }
+    $('#content').val('');
   };
 
   // Add new category
@@ -363,8 +369,16 @@ var TODO = (function(window, document, $) {
     $('.categories-menu').find('li:last').addClass('active');
     $('.tasks').empty();
     $('.tasks').attr('hidden', true);
-    categoriesEmpty.attr('hidden', true);
-    tasksWrapper.removeAttr('hidden');
+    categoriesEmpty.velocity('slideUp', {
+      complete: function() {
+        categoriesEmpty.attr('hidden', true);
+      }
+    });
+    $('.tasks-category-empty');
+    if(tasksWrapper.attr('hidden')) {
+      tasksWrapper.removeAttr('hidden');
+      tasksWrapper.velocity('slideDown')
+    }
     module.setCategoryView(categoryId);
     $('#new-category').val('');
   };
@@ -494,7 +508,7 @@ var TODO = (function(window, document, $) {
           $('.tasks').attr('hidden', true);
         }
       })
-      $('.tasks-category-empty').removeAttr('hidden');
+      $('.tasks-category-empty').removeAttr('hidden').velocity('slideDown');
     }
     module.saveTasks();
   };
@@ -532,7 +546,7 @@ var TODO = (function(window, document, $) {
       }
     });
     if(Object.keys(categories).length === 0 && categories.constructor === Object) {
-      categoriesEmpty.removeAttr('hidden');
+      categoriesEmpty.removeAttr('hidden').velocity('slideDown');
       tasksWrapper.attr('hidden', true);
     }
     module.saveCategories();
