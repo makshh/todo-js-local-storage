@@ -1,0 +1,55 @@
+/* Tasks */
+
+.add-new-task-btn {
+  width: 100%;
+  padding: 0.8rem;
+  color: rgba(255, 255, 255, 0.9);
+  border-radius: 0;
+  background-color: $color-primary;
+  transition: 0.2s ease;
+  &:focus {
+    box-shadow: none;
+  }
+  &:hover {
+    background-color: shade($color-primary, 10%);
+  }
+}
+.tasks {
+  margin-top: 3rem;
+  padding: 2rem;
+  background-color: #fff;
+}
+.task {
+  padding: 1rem 0;
+  &:not(:last-child) {
+    border-bottom: 1px solid #e9ecef;
+  }
+  &.done {
+    text-decoration: line-through;
+    color: $color-gray-4;
+  }
+  &.working {
+    color: $color-info;
+  }
+}
+.task-content {
+  max-width: 500px;
+  transition: .2s ease;
+}
+.btn-task {
+  padding: 0 0.5rem;
+  color: #adb5bd;
+  &:hover {
+    color: $color-primary;
+  }
+}
+.tasks-category-empty {
+  text-align: center;
+  font-size: 1rem;
+  margin-top: 1rem;
+}
+.category-name {
+  margin-bottom: 3rem;
+  font-size: 2rem;
+  text-align: center;
+}
