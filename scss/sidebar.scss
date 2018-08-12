@@ -7,7 +7,7 @@
   overflow: hidden;
   width: 300px;
   height: 100%;
-  background-color: #343a40;
+  background-color: $color-gray-8;
   padding-bottom: 64px;
   transform: translateX(-300px);
   transition: .2s ease;
@@ -23,11 +23,11 @@
   }
   ::-webkit-scrollbar-track {
     border-radius: 0;
-    background: #343a40;
+    background: $color-gray-8;
   }
   ::-webkit-scrollbar-thumb {
     border-radius: 0;
-    background: #868e96;
+    background: $color-gray-6;
   }
 }
 .categories-sidebar-menu {
@@ -41,7 +41,7 @@
   letter-spacing: 0.1rem;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.9);
-  background-color: #2a3035;
+  background-color: $color-gray-9;
 }
 .categories-menu {
   overflow-y: auto;
@@ -102,7 +102,7 @@
     padding: 2rem;
     color: rgba(255, 255, 255, 0.9);
     border-radius: 0;
-    background-color: #2a3035;
+    background-color: $color-gray-9;
     &:focus {
       box-shadow: none;
     }
@@ -133,7 +133,7 @@
     background: rgba(255, 255, 255, 0.2);
   }
   100% {
-    background: #2a3035;
+    background: $color-gray-9;
   }
 }
 .add-category-input-animation {
