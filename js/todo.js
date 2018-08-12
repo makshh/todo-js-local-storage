@@ -9,13 +9,7 @@ var TODO = (function(window, document, $) {
   // Check local storage support
   if (!store.enabled) {
     errorEl.find('> span').text('Local storage is not supported by your browser. Please disable "Private Mode", or upgrade to a modern browser.');
-    errorEl.velocity('fadeIn', {
-      complete: function() {
-        setTimeout(function() {
-          errorEl.velocity('fadeOut');
-        }, 2000);
-      }
-    });
+    errorEl.velocity('fadeIn');
     return;
   }
 
@@ -169,7 +163,8 @@ var TODO = (function(window, document, $) {
 
     $('.task-remove-btn').on('click', function() {
       var taskId = parseInt($(this).attr('data-id'), 10);
-      module.removeTask(taskId);
+      var categoryId = parseInt($('.categories-menu').find('.active').attr('data-category-id'), 10);
+      module.removeTask(taskId, categoryId);
     });
 
     $('.categories-empty-main').on('click', function() {
@@ -284,7 +279,7 @@ var TODO = (function(window, document, $) {
 
   // Show tasks
   module.showTasks = function(categoryId) {
-    $('.tasks-category-empty').removeAttr('hidden');
+    $('.tasks-category-empty').removeAttr('hidden').show();
     $('.tasks').empty();
     $('.category-name').text($('.categories-menu [data-category-id="' + categoryId + '"] > .btn-category-text').text());
     if(Object.keys(tasks).length === 0 && tasks.constructor === Object) {
@@ -485,9 +480,6 @@ var TODO = (function(window, document, $) {
 
   // Remove task
   module.removeTask = function(id, categoryId) {
-    if(!categoryId) {
-      categoryId = '-1';
-    }
     delete tasks[id];
     $('.tasks [data-id="' + id + '"]').velocity('slideUp', {
       complete: function() {
@@ -505,7 +497,6 @@ var TODO = (function(window, document, $) {
         numberOfTasksInCategory += 1;
       }
     }
-    console.log(numberOfTasksInCategory)
     if(numberOfTasksInCategory === 0) {
       $('.tasks').velocity('slideUp', {
         complete: function() {
@@ -566,10 +557,6 @@ var TODO = (function(window, document, $) {
         }, 2000);
       }
     });
-  }
-
-  module.hideError = function(message) {
-    
   }
 
   return module;
