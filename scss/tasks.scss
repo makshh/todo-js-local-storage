@@ -15,14 +15,14 @@
   }
 }
 .tasks {
-  margin-top: 3rem;
+  margin: 3rem 0;
   padding: 2rem;
   background-color: #fff;
 }
 .task {
   padding: 1rem 0;
   &:not(:last-child) {
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid $color-gray-3;
   }
   &.done {
     text-decoration: line-through;
@@ -38,7 +38,7 @@
 }
 .btn-task {
   padding: 0 0.5rem;
-  color: #adb5bd;
+  color: $color-gray-5;
   &:hover {
     color: $color-primary;
   }
