@@ -8,8 +8,8 @@ var TODO = (function(window, document, $) {
 
   // Check local storage support
   if (!store.enabled) {
-    errorEl.text('Local storage is not supported by your browser. Please disable "Private Mode", or upgrade to a modern browser.');
-    errorEl.show();
+    errorEl.find('> span').text('Local storage is not supported by your browser. Please disable "Private Mode", or upgrade to a modern browser.');
+    errorEl.velocity('fadeIn');
     return;
   }
 
@@ -44,8 +44,14 @@ var TODO = (function(window, document, $) {
     $('.add-new-category-btn').on('click', function() {
       var category = $('#new-category').val();
       if(!category) {
-        errorEl.text('Category name cannot be empty');
-        errorEl.show();
+        errorEl.find('> span').text('Category name cannot be empty');
+        errorEl.velocity('fadeIn', {
+          complete: function() {
+            setTimeout(function() {
+              errorEl.velocity('fadeIn');
+            }, 1000);
+          }
+        });
         return;
       }
       module.addCategory(category);
@@ -56,8 +62,8 @@ var TODO = (function(window, document, $) {
       var categoryId = parseInt($('.categories-menu').find('.active').attr('data-category-id'), 10);
       var content = $('#content').val();
       if(!content) {
-        errorEl.text('Task cannot be empty');
-        errorEl.show();
+        errorEl.find('> span').text('Task cannot be empty');
+        errorEl.velocity('fadeIn');
         return;
       }
       var content = $('#content').val();
@@ -95,11 +101,11 @@ var TODO = (function(window, document, $) {
       var categoryId = parseInt($(this).attr('data-category-id'), 10);
       var name = $('#edit-category').val();
       if(content === '') {
-        errorEl.text('Task cannot be empty');
-        errorEl.show();
+        errorEl.find('> span').text('Task cannot be empty');
+        errorEl.velocity('fadeIn');
         return;
       }
-      $('#task-edit-modal').modal('hide');
+      $('#category-edit-modal').modal('hide');
       module.editCategory(categoryId, name);
     });
 
@@ -107,8 +113,8 @@ var TODO = (function(window, document, $) {
       var taskId = parseInt($(this).attr('data-id'), 10);
       var content = $('#edit-task').val();
       if(content === '') {
-        errorEl.text('Task cannot be empty');
-        errorEl.show();
+        errorEl.find('> span').text('Task cannot be empty');
+        errorEl.velocity('fadeIn');
         return;
       }
       $('#task-edit-modal').modal('hide');
@@ -142,9 +148,12 @@ var TODO = (function(window, document, $) {
     });
 
     $('.categories-empty-main').on('click', function() {
+      if($(window).width() < 992) {
+        $('.categories-sidebar, .mobile-menu').addClass('active');
+      }
       $('#new-category').addClass('add-category-input-animation').focus();
       setTimeout(function() {
-        $('#new-category').removeClass('add-category-input-animation')
+        $('#new-category').removeClass('add-category-input-animation');
       }, 1000);
     });
 
@@ -162,6 +171,18 @@ var TODO = (function(window, document, $) {
     $('#content').keypress(function(event) {
       if(event.keyCode == 13) {
         $('.add-new-task-btn').trigger('click');
+      }
+    });
+
+    $('#edit-category').keypress(function(event) {
+      if(event.keyCode == 13) {
+        $('.category-edit-btn').trigger('click');
+      }
+    });
+
+    $('#edit-task').keypress(function(event) {
+      if(event.keyCode == 13) {
+        $('.task-edit-btn').trigger('click');
       }
     });
 
@@ -189,6 +210,10 @@ var TODO = (function(window, document, $) {
         task.removeClass('working');
       }
       module.saveTasks();
+    });
+
+    $(document).on('click', '#error > button', function() {
+      errorEl.velocity('fadeOut');
     });
   };
 
@@ -290,6 +315,9 @@ var TODO = (function(window, document, $) {
                     '<button type="button" class="btn btn-task btn-task-remove"><i class="fas fa-times"></i></button>' +
                   '</div>' +
                 '</div>';
+    $('.tasks').removeAttr('hidden');
+    $('.tasks').velocity('slideDown');
+    $('#content').val('');
     $(html).appendTo('.tasks');
     $('.task[data-id="' + taskId + '"]').velocity('slideDown');
   };
@@ -309,9 +337,11 @@ var TODO = (function(window, document, $) {
     $('.categories-menu > li').removeClass('active');
     $('.categories-menu').find('li:last').addClass('active');
     $('.tasks').empty();
+    $('.tasks').attr('hidden', true);
     categoriesEmpty.attr('hidden', true);
     tasksWrapper.removeAttr('hidden');
     module.setCategoryView(categoryId);
+    $('#new-category').val('');
   };
 
   // Get number of tasks
@@ -421,6 +451,26 @@ var TODO = (function(window, document, $) {
         $('.tasks [data-id="' + id + '"]').remove()
       }
     });
+    var numberOfTasksInCategory = 0;
+    var categoryId = parseInt($('.categories-menu > li.active').attr('data-category-id'), 10);
+    for(var key in tasks) {
+      if (!tasks.hasOwnProperty(key)) {
+        continue;
+      }
+      var task = tasks[key];
+      if(task.categoryId === categoryId) {
+        numberOfTasksInCategory += 1;
+      }
+    }
+    console.log(numberOfTasksInCategory)
+    if(numberOfTasksInCategory === 0) {
+      $('.tasks').velocity('slideUp', {
+        complete: function() {
+          $('.tasks').attr('hidden', true);
+        }
+      })
+      $('.tasks-category-empty').removeAttr('hidden');
+    }
     module.saveTasks();
   };
 
