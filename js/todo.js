@@ -88,7 +88,7 @@ var TODO = (function(window, document, $) {
       $(this).parent().addClass('active');
       var categoryId = parseInt($(this).parent().attr('data-category-id'), 10);
       $('.tasks').attr('hidden', true);
-      $('.category-name').text($(this).text()).velocity('fadeIn');
+      $('.category-name').text($(this).text());
       module.showTasks(categoryId);
       module.setCategoryView(categoryId);
     });
@@ -318,7 +318,7 @@ var TODO = (function(window, document, $) {
                 '</div>' +
               '</div>';
     }
-    $(html).appendTo('.tasks').velocity('fadeIn');
+    $(html).appendTo('.tasks');
   };
 
   // Add new task
@@ -363,6 +363,7 @@ var TODO = (function(window, document, $) {
                 '</li>';
     categories[categoryId] = name;
     module.saveCategories();
+    $('.category-name').text(name);
     $(html).appendTo('.categories-menu');
     $('.categories-menu [data-category-id="' + categoryId + '"]').velocity('slideDown');
     $('.categories-menu > li').removeClass('active');
@@ -483,7 +484,10 @@ var TODO = (function(window, document, $) {
   };
 
   // Remove task
-  module.removeTask = function(id) {
+  module.removeTask = function(id, categoryId) {
+    if(!categoryId) {
+      categoryId = '-1';
+    }
     delete tasks[id];
     $('.tasks [data-id="' + id + '"]').velocity('slideUp', {
       complete: function() {
@@ -491,12 +495,12 @@ var TODO = (function(window, document, $) {
       }
     });
     var numberOfTasksInCategory = 0;
-    var categoryId = parseInt($('.categories-menu > li.active').attr('data-category-id'), 10);
     for(var key in tasks) {
       if (!tasks.hasOwnProperty(key)) {
         continue;
       }
       var task = tasks[key];
+      console.log(task)
       if(task.categoryId === categoryId) {
         numberOfTasksInCategory += 1;
       }
@@ -537,7 +541,7 @@ var TODO = (function(window, document, $) {
       }
       var task = tasks[key];
       if(task.categoryId === id) {
-        module.removeTask(key);
+        module.removeTask(key, id);
       }
     }
     removed.velocity('slideUp', {
