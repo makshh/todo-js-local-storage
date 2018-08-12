@@ -511,6 +511,10 @@ var TODO = (function(window, document, $) {
   // Edit category
   module.editCategory = function(id, name) {
     categories[id] = name;
+    var activeCategoryId = parseInt($('.categories-menu .active').attr('data-category-id'), 10);
+    if(id === activeCategoryId) {
+      $('.category-name').text(name);
+    }
     $('.categories-menu [data-category-id="' + id + '"]').find('.btn-category-text').text(name);
     module.saveCategories();
   };
