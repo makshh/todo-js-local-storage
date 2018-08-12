@@ -3,8 +3,8 @@
 /* Variables */
 /* Basic styles */
 body {
-  font-family: 'Nunito';
-  color: #888da8;
+  font-family: "Nunito", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #868e96;
   background-color: #e9ecef;
 }
 
@@ -87,7 +87,7 @@ body {
 .modal-header,
 .modal-body,
 .modal-footer {
-  background-color: #e9ecef;
+  background-color: #f1f3f5;
 }
 
 .modal-body > .form-control {
@@ -97,6 +97,12 @@ body {
 
 .modal-footer > .btn {
   padding: 0.6rem 1.5rem;
+}
+
+.modal-content {
+  border-radius: 0;
+  border: none;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
 }
 
 #error {
@@ -322,7 +328,7 @@ body {
   letter-spacing: 0.1rem;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.9);
-  background-color: #2a3035;
+  background-color: #212529;
 }
 
 .categories-menu {
@@ -399,7 +405,7 @@ body {
   padding: 2rem;
   color: rgba(255, 255, 255, 0.9);
   border-radius: 0;
-  background-color: #2a3035;
+  background-color: #212529;
 }
 
 .add-new-category > .form-control:focus {
@@ -435,7 +441,7 @@ body {
     background: rgba(255, 255, 255, 0.2);
   }
   100% {
-    background: #2a3035;
+    background: #212529;
   }
 }
 
@@ -468,7 +474,7 @@ body {
 }
 
 .tasks {
-  margin-top: 3rem;
+  margin: 3rem 0;
   padding: 2rem;
   background-color: #fff;
 }
@@ -478,7 +484,7 @@ body {
 }
 
 .task:not(:last-child) {
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid #dee2e6;
 }
 
 .task.done {
