@@ -112,8 +112,8 @@ var TODO = (function(window, document, $) {
     $('.category-edit-btn').on('click', function() {
       var categoryId = parseInt($(this).attr('data-category-id'), 10);
       var name = $('#edit-category').val();
-      if(content === '') {
-        errorEl.find('> span').text('Task cannot be empty');
+      if(name === '') {
+        errorEl.find('> span').text('Category name cannot be empty');
         errorEl.velocity('fadeIn', {
           complete: function() {
             setTimeout(function() {
@@ -526,13 +526,33 @@ var TODO = (function(window, document, $) {
         module.removeTask(key);
       }
     }
-    removed.remove();
+    removed.velocity('slideUp', {
+      complete: function() {
+        removed.remove();
+      }
+    });
     if(Object.keys(categories).length === 0 && categories.constructor === Object) {
       categoriesEmpty.removeAttr('hidden');
       tasksWrapper.attr('hidden', true);
     }
     module.saveCategories();
   };
+
+  module.showError = function(message, el) {
+    var error = $('#error');
+    errorEl.find('> span').text('Category name cannot be empty');
+    errorEl.velocity('fadeIn', {
+      complete: function() {
+        setTimeout(function() {
+          errorEl.velocity('fadeOut');
+        }, 2000);
+      }
+    });
+  }
+
+  module.hideError = function(message) {
+    
+  }
 
   return module;
 
